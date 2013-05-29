@@ -10,7 +10,7 @@ attribute, there will be first DIV with data-frame attribute used.
 
 <table>
 <tr>
-<th>data-frame</th><td>Name of the frame corresponding to window.location.hash value.</td>
+<th>data&#8209;frame</th><td>Name of the frame corresponding to window.location.hash value.</td>
 </tr>
 <tr>
 <th>data-default</th><td>Indicates that the frame will be used as default when window.location.hash is empty.
@@ -22,18 +22,26 @@ attribute, there will be first DIV with data-frame attribute used.
                  load contents from that URL and embed it as DIV contents. This must happen only once.
                  If DIV initially has any child elements, data-url attribute will be silently ignored.</td>
 </tr>
+</table>
 
 Example HTML:
-<div id="hashnav">
-    <div data-frame="home" data-default></div>
-    <div data-frame="login"></div>
-    <div data-frame="profile" data-url="/profile.json"></div>
-</div>
+
+    <div id="hashnav">
+        <div data-frame="home" data-default></div>
+        <div data-frame="login"></div>
+        <div data-frame="profile" data-url="/profile.json"></div>
+    </div>
 
 Example javascript:
-$('#hashnav').hashnav(options);
 
-Supported options:
-start            Name of frame to start with. If this option is specified and there is a DIV with
+    $('#hashnav').hashnav(options);
+
+## Supported options:
+
+<table>
+<tr>
+<th>start</th><td>Name of frame to start with. If this option is specified and there is a DIV with
                  the same data-frame value, HTML5 attribute data-default will be ignored and this
-                 value will be used instead.
+                 value will be used instead.</td>
+</tr>
+</table>
