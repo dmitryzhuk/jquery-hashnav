@@ -47,7 +47,7 @@ Example HTML:
 
 Example javascript:
 
-    $('#hashnav').hashnav(options);
+    $('#hashnav').hashnav();
 
 ## Supported options:
 
@@ -66,7 +66,7 @@ Example javascript:
 
 Example javascript:
 
-    $('#hashnav').hashnav({ default: 'login' });
+    $('#hashnav').hashnav({ start: 'login' });
 
 will override HTML-defined frame home and instructs plugin to use login frame as default.
 
