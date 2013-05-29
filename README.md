@@ -1,5 +1,4 @@
-jquery-hashnav
-==============
+#jquery-hashnav
 
 This plugin provides navigation functionality based on hash part of window.location.
 Basically it just displays child DIV elements having data-frame attribute which value
@@ -7,15 +6,22 @@ is identical to window.location.hash value. Child DIV element having data-defaul
 will be used when window.location.hash is empty. If there is no element having data-default
 attribute, there will be first DIV with data-frame attribute used.
 
-Supported HTML5 attributes:
+## Supported HTML5 attributes:
 
-data-frame       Name of the frame corresponding to window.location.hash value.
-data-default     Indicates that the frame will be used as default when window.location.hash is empty.
-                 No value required, any given value is silently ignored.
-data-url         An URL to load frame contents from. If this attribute is provided, there must be
+<table>
+<tr>
+<th>data-frame</th><td>Name of the frame corresponding to window.location.hash value.</td>
+</tr>
+<tr>
+<th>data-default</th><td>Indicates that the frame will be used as default when window.location.hash is empty.
+                 No value required, any given value is silently ignored.</td>
+</tr>
+<tr>
+<th>data-url</th><td>An URL to load frame contents from. If this attribute is provided, there must be
                  no child elements in DIV element initially. Hashnav plugin will asynchronously
                  load contents from that URL and embed it as DIV contents. This must happen only once.
-                 If DIV initially has any child elements, data-url attribute will be silently ignored.
+                 If DIV initially has any child elements, data-url attribute will be silently ignored.</td>
+</tr>
 
 Example HTML:
 <div id="hashnav">
