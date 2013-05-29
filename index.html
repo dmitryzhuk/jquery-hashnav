@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jquery.hashnav plugin demo</title>
+</head>
+<body>
+
+<button>Go to zero</button>
+<div id="current">No transition yet</div>
+<p>Add #duo to your current URL to navigate to corresponding frame which is not linked.</p>
+<div id="hashnav">
+    <div data-frame="zero" data-start>
+        <h1>Frame Zero</h1>
+        <ul>
+            <li><a href="#solo">Navigate to solo frame</a></li>
+            <li><a href="#remote">Navigate to remote frame</a></li>
+        </ul>
+    </div>
+    <div data-frame="solo">
+        <h1>Frame Solo</h1>
+        <ul>
+            <li><a href="javascript:{ window.history.back(); }">Navigate back through the history</a></li>
+            <li><a href="javascript:{ window.history.forward(); }">Navigate forth through the history</a></li>
+        </ul>
+    </div>
+    <div data-frame="duo">
+        <li><a href="#">Navigate to starting frame</a></li>
+        <li><a href="#solo">Navigate to solo frame</a></li>
+    </div>
+    <!-- This will only work if example runs under web server -->
+    <div data-frame="remote" data-url="remote.html">
+    </div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.hashnav.js"></script>
+<script>
+    $('#hashnav').hashnav().on('slide', function (e) {
+        $('#current').text(e.prev + '->' + e.next);
+    });
+    $('button').click(function () { $('#hashnav').hashnav({ action: 'display', frame: 'zero' }); });
+</script>
+
+</body>
+</html>
