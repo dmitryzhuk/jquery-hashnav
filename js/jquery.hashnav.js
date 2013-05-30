@@ -4,7 +4,7 @@
  * This file is provided under terms and conditions of
  * Eclipse Public License v.1.0 http://www.opensource.org/licenses/eclipse-1.0
  *
- * Developed by Dmitry Zhuk
+ * Developed by Dmitry Zhuk.
  * 2013
  */
 
@@ -104,12 +104,32 @@
          * @param frame a name of frame to display.
          */
         display: function (frame) {
+
             // only do something if given frame is not already current one
             if (this.current !== frame) {
                 // get elements corresponding to current and given frames
                 var prev = $('[data-frame="' + this.current + '"]', this.element),
                     next = $('[data-frame="' + frame + '"]', this.element),
-                    url = next.attr('data-url');
+                    url = next.attr('data-url'),
+                    current = this.current,
+                    element = this.element,
+                    event = {
+                        prev: {
+                            name: current,
+                            element: prev.get(0)
+                        },
+                        next: {
+                            name: frame,
+                            element: next.get(0)
+                        }
+                    },
+                    trigger = function () {
+                        $(element).trigger($.Event('slide', event));
+                    };
+
+                // trigger event before slide
+                $(element).trigger($.Event('before', event));
+
                 // if element for the next frame actually exists
                 if (next.size() > 0) {
                     // check if target element defines url to load its contents from
@@ -126,27 +146,24 @@
                             }).always(function () {
                                 // anyways - perform visual transition
                                 if (prev.size() > 0) {
-                                    prev.fadeOut(function () { next.fadeIn(); });
+                                    prev.fadeOut(function () { next.fadeIn(trigger); });
                                 } else {
-                                    next.fadeIn();
+                                    next.fadeIn(trigger);
                                 }
                             });
                     } else {
                         // no url specified or contents already loaded
                         // just do visual transition
                         if (prev.size() > 0) {
-                            prev.fadeOut(function () { next.fadeIn(); });
+                            prev.fadeOut(function () { next.fadeIn(trigger); });
                         } else {
-                            next.fadeIn();
+                            next.fadeIn(trigger);
                         }
                     }
                 } else {
                     // there is no element for the next frame, just fade out current one
-                    prev.fadeOut();
+                    prev.fadeOut(trigger);
                 }
-
-                // trigger change event
-                $(this.element).trigger($.Event('slide', { 'prev': this.current, 'next': frame }));
 
                 // set given frame as current one
                 this.current = frame;
