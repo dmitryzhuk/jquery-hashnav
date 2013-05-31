@@ -124,7 +124,7 @@
                         }
                     },
                     trigger = function () {
-                        $(element).trigger($.Event('slide', event));
+                        $(element).trigger($.Event('after', event));
                     };
 
                 // trigger event before slide
