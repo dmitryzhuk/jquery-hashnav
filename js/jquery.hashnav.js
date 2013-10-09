@@ -55,9 +55,10 @@
 
         // if we were able to define starting frame
         // set up window hash listener and display starting frame
-        if (this.start) {
+        if (this.start !== undefined) {
+            var self = this;
             // set up window hash change event listener
-            $(window).on('hashchange', function () { this.display(this.frame()); }.bind(this));
+            $(window).on('hashchange', function () { self.display(self.frame()); });
             // display starting frame
             this.display(this.start);
         }
