@@ -141,6 +141,7 @@
                             .done(function (contents) {
                                 // success - filling div with actual contents
                                 next.html(contents);
+                                $(element).trigger($.Event('load', event));
                             }).fail(function () {
                                 // failure - adding hidden div just to prevent further loads
                                 next.html('<div style="display:none"></div>');
@@ -171,10 +172,40 @@
             }
         },
 
+        /**
+         * Force loads content of the given frame if there is a data-url attribute
+         * @param frame a name of frame to force load
+         */
+        load: function (frame) {
+            var container = $('[data-frame="' + frame + '"]', this.element),
+                url = container.attr('data-url'),
+                element = this.element,
+                event = {
+                    name: frame,
+                    element: container.get(0)
+                };
+            if (url) {
+                // load contents and do visual transition
+                $.get(url)
+                    .done(function (contents) {
+                        // success - filling div with actual contents
+                        container.html(contents);
+                        $(element).trigger($.Event('load', event));
+                    }).fail(function () {
+                        // failure - adding hidden div just to prevent further loads
+                        container.html('<div style="display:none"></div>');
+                    });
+            }
+        },
+
         /** Executes command with options on given element */
         command: function (element, options) {
             if (options !== undefined) {
-                if (options.action === 'display') { window.location.hash = '#' + options.frame; }
+                if (options.action === 'display') {
+                    window.location.hash = '#' + options.frame;
+                } else if (options.action === 'load') {
+                    this.load(options.frame);
+                }
             }
         }
 
