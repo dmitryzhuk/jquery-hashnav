@@ -173,7 +173,9 @@
 
         /** Executes command with options on given element */
         command: function (element, options) {
-            if (options.action === 'display') { window.location.hash = '#' + options.frame; }
+            if (options !== undefined) {
+                if (options.action === 'display') { window.location.hash = '#' + options.frame; }
+            }
         }
 
     };
