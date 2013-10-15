@@ -126,6 +126,7 @@
                     },
                     trigger = function () {
                         $(element).trigger($.Event('after', event));
+                        next.trigger($.Event('show'));
                     };
 
                 // trigger event before slide
@@ -142,13 +143,18 @@
                                 // success - filling div with actual contents
                                 next.html(contents);
                                 $(element).trigger($.Event('load', event));
+                                next.trigger($.Event('load'));
                             }).fail(function () {
                                 // failure - adding hidden div just to prevent further loads
                                 next.html('<div style="display:none"></div>');
+                                next.trigger($.Event('fail'));
                             }).always(function () {
                                 // anyways - perform visual transition
                                 if (prev.size() > 0) {
-                                    prev.fadeOut(function () { next.fadeIn(trigger); });
+                                    prev.fadeOut(function () {
+                                        prev.trigger($.Event('hide'));
+                                        next.fadeIn(trigger);
+                                    });
                                 } else {
                                     next.fadeIn(trigger);
                                 }
@@ -157,14 +163,20 @@
                         // no url specified or contents already loaded
                         // just do visual transition
                         if (prev.size() > 0) {
-                            prev.fadeOut(function () { next.fadeIn(trigger); });
+                            prev.fadeOut(function () {
+                                prev.trigger($.Event('hide'));
+                                next.fadeIn(trigger);
+                            });
                         } else {
                             next.fadeIn(trigger);
                         }
                     }
                 } else {
                     // there is no element for the next frame, just fade out current one
-                    prev.fadeOut(trigger);
+                    prev.fadeOut(function () {
+                        prev.trigger($.Event('hide'));
+                        $(element).trigger($.Event('after', event));
+                    });
                 }
 
                 // set given frame as current one
@@ -191,9 +203,11 @@
                         // success - filling div with actual contents
                         container.html(contents);
                         $(element).trigger($.Event('load', event));
+                        container.trigger($.Event('load'));
                     }).fail(function () {
                         // failure - adding hidden div just to prevent further loads
                         container.html('<div style="display:none"></div>');
+                        container.trigger($.Event('fail'));
                     });
             }
         },
