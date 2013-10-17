@@ -196,7 +196,7 @@
                     name: frame,
                     element: container.get(0)
                 };
-            if (url) {
+            if (url && container.children('*').size() === 0) {
                 // load contents and do visual transition
                 $.get(url)
                     .done(function (contents) {
