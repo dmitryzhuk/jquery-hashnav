@@ -42,6 +42,9 @@
 
     /** Defines Hash Navigator Plugin constructor */
     function Hashnav(element, options) {
+
+        var self = this, start;
+
         // set values for 'private' fields
         this.element = element;
         this.options = $.extend({}, defaults, options);
@@ -49,25 +52,26 @@
         // hide all children
         $(this.element).children('*').hide();
 
-        // set up starting and current frame
-        this.start = this.frame();
-        this.current = '';
+        // set up current frame
+        this.current = undefined;
 
-        // if we were able to define starting frame
-        // set up window hash listener and display starting frame
-        if (this.start !== undefined) {
-            var self = this;
-            // set up window hash change event listener
-            $(window).on('hashchange', function () { self.display(self.frame()); });
-            // display starting frame
-            this.display(this.start);
+        // display starting frame
+        start = this.frame();
+        if (start !== undefined) {
+            this.display(start);
         }
+
+        // set up window hash change event listener
+        $(window).on('hashchange', function () {
+            self.display(self.frame());
+        });
     }
 
     /** Plugin prototype definition */
     Hashnav.prototype = {
 
-        /** Returns name of the frame based on current window.location.hash value.
+        /**
+         * Returns name of the frame based on current window.location.hash value.
          * It is possible that this function will return false instead of frame name if
          * window.location.hash is empty and there is no children divs in container.
          */
@@ -83,12 +87,12 @@
                     start = $('div[data-default][data-frame]', this.element);
                     if (start.size() > 0) {
                         // there is a child marked as default
-                        frame = start.get(0).getAttribute('data-frame');
+                        frame = start.attr('data-frame');
                     } else {
                         // if no default element found use just the first child div
                         children = $(this.element).children('div[data-frame]');
                         if (children.size() > 0) {
-                            frame = children.get(0).getAttribute('data-frame');
+                            frame = children.eq(0).attr('data-frame');
                         }
                     }
                 }
@@ -99,10 +103,12 @@
             return frame;
         },
 
-        /** Displays given frame fading out current frame if any.
+        /**
+         * Displays given frame fading out current frame if any.
          * Given frame will become current.
          *
-         * @param frame a name of frame to display.
+         * @param frame
+         *          A name of frame to display.
          */
         display: function (frame) {
 
@@ -124,59 +130,34 @@
                             element: next.get(0)
                         }
                     },
-                    trigger = function () {
+                    show = function () {
+                        next.show().trigger($.Event('show'));
                         $(element).trigger($.Event('after', event));
-                        next.trigger($.Event('show'));
                     };
 
-                // trigger event before slide
+                // trigger event before transition
                 $(element).trigger($.Event('before', event));
+
+                // if previous frame exists we should hide it prior to everything else
+                if (prev.size() > 0) {
+                    prev.hide().trigger($.Event('hide'));
+                }
 
                 // if element for the next frame actually exists
                 if (next.size() > 0) {
                     // check if target element defines url to load its contents from
                     // and if contents was not already loaded
-                    if (url && next.children('*').size() === 0) {
+                    if (!!url && next.children('*').size() === 0) {
                         // load contents and do visual transition
-                        $.get(url)
-                            .done(function (contents) {
-                                // success - filling div with actual contents
-                                next.html(contents);
-                                $(element).trigger($.Event('load', event));
-                                next.trigger($.Event('load'));
-                            }).fail(function () {
-                                // failure - adding hidden div just to prevent further loads
-                                next.html('<div style="display:none"></div>');
-                                next.trigger($.Event('fail'));
-                            }).always(function () {
-                                // anyways - perform visual transition
-                                if (prev.size() > 0) {
-                                    prev.fadeOut(function () {
-                                        prev.trigger($.Event('hide'));
-                                        next.fadeIn(trigger);
-                                    });
-                                } else {
-                                    next.fadeIn(trigger);
-                                }
-                            });
+                        this.load(
+                            frame,
+                            function () { show(); },
+                            function () { $(element).trigger($.Event('after', event)); }
+                        );
                     } else {
-                        // no url specified or contents already loaded
-                        // just do visual transition
-                        if (prev.size() > 0) {
-                            prev.fadeOut(function () {
-                                prev.trigger($.Event('hide'));
-                                next.fadeIn(trigger);
-                            });
-                        } else {
-                            next.fadeIn(trigger);
-                        }
+                        // otherwise simply show the next frame
+                        show();
                     }
-                } else {
-                    // there is no element for the next frame, just fade out current one
-                    prev.fadeOut(function () {
-                        prev.trigger($.Event('hide'));
-                        $(element).trigger($.Event('after', event));
-                    });
                 }
 
                 // set given frame as current one
@@ -185,10 +166,18 @@
         },
 
         /**
-         * Force loads content of the given frame if there is a data-url attribute
-         * @param frame a name of frame to force load
+         * Force loads content of the given frame if there is a data-url attribute.
+         * Note that this method will reload frame contents even if it was loaded before
+         * or even if frame container is not empty for other reasons.
+         *
+         * @param frame
+         *          A name of frame to force load.
+         * @param success
+         *          An optional function which will be invoked upon successful load completion.
+         * @param error
+         *          An optional function which will be invoked in case of failure.
          */
-        load: function (frame) {
+        load: function (frame, success, error) {
             var container = $('[data-frame="' + frame + '"]', this.element),
                 url = container.attr('data-url'),
                 element = this.element,
@@ -196,7 +185,7 @@
                     name: frame,
                     element: container.get(0)
                 };
-            if (url && container.children('*').size() === 0) {
+            if (url) {
                 // load contents and do visual transition
                 $.get(url)
                     .done(function (contents) {
@@ -204,11 +193,27 @@
                         container.html(contents);
                         $(element).trigger($.Event('load', event));
                         container.trigger($.Event('load'));
+                        if (!!success) {
+                            success();
+                        }
                     }).fail(function () {
                         // failure - adding hidden div just to prevent further loads
                         container.html('<div style="display:none"></div>');
                         container.trigger($.Event('fail'));
+                        if (!!error) {
+                            error();
+                        }
                     });
+            } else {
+                // if no url was found, treat it as a failure
+                window.setTimeout(function () {
+                    // failure - adding hidden div just to prevent further loads
+                    container.html('<div style="display:none"></div>');
+                    container.trigger($.Event('fail'));
+                    if (!!error) {
+                        error();
+                    }
+                }, 1);
             }
         },
 
@@ -228,11 +233,12 @@
     // Bind plugin instance to element
     $.fn[name] = function (options) {
         return this.each(function () {
-            if (!$.data(this, "plugin_" + name)) {
-                $.data(this, "plugin_" + name, new Hashnav(this, options));
-            } else {
-                $.data(this, "plugin_" + name).command(this, options);
+            var plugin = $.data(this, "plugin_" + name);
+            if (!plugin) {
+                plugin = new Hashnav(this, options);
+                $.data(this, "plugin_" + name, plugin);
             }
+            $.data(this, "plugin_" + name).command(this, options);
         });
     };
 
