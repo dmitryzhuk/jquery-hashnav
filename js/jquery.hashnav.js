@@ -36,7 +36,10 @@
     'use strict';
 
     /** Default options for Hash Navigator Plugin */
-    var defaults = { /* Nothing here */ },
+    var defaults = {
+            /** Name of $.data key to store context data */
+            'context': '_context_'
+        },
         /** Plugin name exposed to public */
         name = 'hashnav';
 
@@ -98,9 +101,57 @@
                 }
             } else {
                 // or just use window hash value without actual hash sign as a frame name.
-                frame = window.location.hash.substring(1);
+                frame = window.location.hash.substring(1).split(';')[0];
             }
             return frame;
+        },
+
+        /**
+         * Returns or sets context data associated with target element.
+         *
+         * In read mode (when second parameter is not defined) this method
+         * first checks if there is a context object associated with given frame.
+         * If found, this object will be returned and then deleted from storage.
+         * If there is no context object, this method checks if there is context
+         * data passed through URL, which is expected to be a part of location
+         * hash separated by semicolon from the frame name.
+         *
+         * In write mode (when second parameter is defined) this method stores
+         * data in context.
+         *
+         * @param frame
+         *          A name of frame to get context data for.
+         * @param context
+         *          Context object to associate with given frame.
+         * @return Context object associated with transition destination.
+         */
+        context: function (frame, context) {
+            var data, array;
+            if (!!context) {
+                data = $(this.element).data(this.options.context);
+                if (data === undefined) {
+                    data = {};
+                    $(this.element).data(this.options.context, data);
+                }
+                data[frame] = context;
+            } else {
+                if (!!frame) {
+                    data = $(this.element).data(this.options.context);
+                    if (!!data) {
+                        context = data[frame];
+                        data[frame] = undefined;
+                    }
+                }
+                if (context === undefined) {
+                    if (!!window.location.hash && window.location.hash.trim().length > 0) {
+                        array = window.location.hash.split(';');
+                        if (array.length > 1) {
+                            context = array[1];
+                        }
+                    }
+                }
+            }
+            return context;
         },
 
         /**
@@ -120,19 +171,17 @@
                     url = next.attr('data-url'),
                     current = this.current,
                     element = this.element,
+                    context = this.context(frame),
                     event = {
-                        prev: {
-                            name: current,
-                            element: prev.get(0)
+                        'prev': {
+                            'name': current,
+                            'element': prev.get(0)
                         },
-                        next: {
-                            name: frame,
-                            element: next.get(0)
-                        }
-                    },
-                    show = function () {
-                        next.show().trigger($.Event('show'));
-                        $(element).trigger($.Event('after', event));
+                        'next': {
+                            'name': frame,
+                            'element': next.get(0)
+                        },
+                        'context': context
                     };
 
                 // trigger event before transition
@@ -151,12 +200,22 @@
                         // load contents and do visual transition
                         this.load(
                             frame,
-                            function () { show(); },
-                            function () { $(element).trigger($.Event('after', event)); }
+                            // if succeeded trigger `show` and `after` events
+                            // and actually make next frame visible
+                            function () {
+                                next.show().trigger($.Event('show', { 'context': context }));
+                                $(element).trigger($.Event('after', event));
+                            },
+                            // if failed only trigger `after` event
+                            function () {
+                                $(element).trigger($.Event('after', event));
+                            }
                         );
                     } else {
                         // otherwise simply show the next frame
-                        show();
+                        // and trigger both `show` and `after` events
+                        next.show().trigger($.Event('show', { 'context': context }));
+                        $(element).trigger($.Event('after', event));
                     }
                 }
 
@@ -192,14 +251,13 @@
                         // success - filling div with actual contents
                         container.html(contents);
                         $(element).trigger($.Event('load', event));
-                        container.trigger($.Event('load'));
                         if (!!success) {
                             success();
                         }
                     }).fail(function () {
                         // failure - adding hidden div just to prevent further loads
                         container.html('<div style="display:none"></div>');
-                        container.trigger($.Event('fail'));
+                        $(element).trigger($.Event('fail', event));
                         if (!!error) {
                             error();
                         }
@@ -209,7 +267,7 @@
                 window.setTimeout(function () {
                     // failure - adding hidden div just to prevent further loads
                     container.html('<div style="display:none"></div>');
-                    container.trigger($.Event('fail'));
+                    $(element).trigger($.Event('fail', event));
                     if (!!error) {
                         error();
                     }
@@ -221,6 +279,7 @@
         command: function (element, options) {
             if (options !== undefined) {
                 if (options.action === 'display') {
+                    this.context(options.frame, options.context);
                     window.location.hash = '#' + options.frame;
                 } else if (options.action === 'load') {
                     this.load(options.frame);
