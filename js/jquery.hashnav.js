@@ -271,12 +271,19 @@
                     if (!!error) {
                         error();
                     }
-                }, 1);
+                }, 0);
             }
         },
 
-        /** Executes command with options on given element */
-        command: function (element, options) {
+        /**
+         * Executes command as specified in options.
+         *
+         * - { 'action': 'display', 'frame': <frame>, 'context': <object> }
+         *          Displays frame with given name setting given object in context.
+         * - { 'action': 'load', 'frame': <frame> }
+         *          Forces loading of the frame with given name.
+         */
+        command: function (options) {
             if (options !== undefined) {
                 if (options.action === 'display') {
                     this.context(options.frame, options.context);
@@ -292,12 +299,13 @@
     // Bind plugin instance to element
     $.fn[name] = function (options) {
         return this.each(function () {
-            var plugin = $.data(this, "plugin_" + name);
-            if (!plugin) {
+            var key = 'plugin_' + name,
+                plugin = $.data(this, name);
+            if (plugin === undefined) {
                 plugin = new Hashnav(this, options);
-                $.data(this, "plugin_" + name, plugin);
+                $.data(this, name, plugin);
             }
-            $.data(this, "plugin_" + name).command(this, options);
+            plugin.command(options);
         });
     };
 
