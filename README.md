@@ -152,8 +152,8 @@ Example javascript:
                 context: object
             }
         </code></pre>
-        Context object is the one which was passed in 'display' command or, if none, the contents of URL
-        right after semicolon character in hash part of URL. If none provided, is undefined.
+        Context object is the one which was passed in 'display' command or, if none, the text
+        following semicolon (;) character in hash part of URL. If none provided, is undefined.
         Event is triggered on HTML element to which this plugin is bound (frame container).
     </td>
 </tr>
