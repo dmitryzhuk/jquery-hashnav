@@ -96,9 +96,9 @@ $('#hashnav').hashnav({ action: 'display', frame: 'login', context: object });
     <th>load</th>
     <td>
         Forces loading of the particular frame.
-<pre><code>
-    $('#hashnav').hashnav({ action: 'load', frame: 'login' });
-</code></pre>
+        <pre><code>
+$('#hashnav').hashnav({ action: 'load', frame: 'login' });
+        </code></pre>
         will load contents of div with data-frame="login" using value of data-url attribute.
     </td>
 </tr>
