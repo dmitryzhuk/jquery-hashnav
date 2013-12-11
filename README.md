@@ -82,14 +82,25 @@ Example javascript:
 <table>
 
 <tr>
-<th>display</th>
-<td>
-    Displays specific frame programmatically.
-    <pre><code>
-    $('#hashnav').hashnav({ action: 'display', frame: 'login' });
-    </code></pre>
-    will display DIV with data-frame="login".
-</td>
+    <th>display</th>
+    <td>
+        Displays specific frame programmatically.
+        <pre><code>
+        $('#hashnav').hashnav({ action: 'display', frame: 'login', context: object });
+        </code></pre>
+        will display DIV with data-frame="login" passing given context object into a corresponding event.
+    </td>
+</tr>
+
+<tr>
+    <th>load</th>
+    <td>
+        Forces loading of the particular frame.
+        <pre><code>
+            $('#hashnav').hashnav({ action: 'load', frame: 'login' });
+        </code></pre>
+        will load contents of div with data-frame="login" using value of data-url attribute.
+    </td>
 </tr>
 
 </table>
@@ -99,15 +110,74 @@ Example javascript:
 <table>
 
 <tr>
-<th>slide</th>
-<td>
-    Triggered when current frame has been changed. Event object provides 2 properties: *prev* with name
-    of previously active frame and *next* with name of the frame being activated.
-    <pre><code>
-    $('#hashnav').hashnav().on('slide', function (e) { console.log(e.next); });
-    </code></pre>
-    will output name of the appearing frame to console.
-</td>
+    <th>load</th>
+    <td>
+        Triggered upon successful completion of frame loading. Loading process is initiated
+        when hashnav plugin navigates to frame which was not loaded before or by means of
+        'load' command. An event object contains two fields: name of the loaded frame and 
+        actual HTMl element representing this frame { name: 'frameName', element: htmlElement }.
+        <pre><code>
+            $('#hashnav').hashnav().on('load', function (e) { console.log(e.name); });
+        </code></pre>
+        will output name of the loaded frame to console.
+        Event is triggered on HTML element to which this plugin is bound (frame container).
+    </td>
+</tr>
+<tr>
+    <th>fail</th>
+    <td>
+        Triggered if frame loading failed for some reason. Event object has the same structure as
+        for 'load' event.
+        <pre><code>
+            $('#hashnav').hashnav().on('fail', function (e) { console.log('Failed loading ' + e.name); });
+        </code></pre>
+        will output name of the frame which failed to be loaded.
+        Event is triggered on HTML element to which this plugin is bound (frame container).
+    </td>
+</tr>
+<tr>
+    <th>before</th>
+    <td>
+        Triggered before actual frame transition. Event structure is following:
+        <pre><code>
+            {
+                prev: {
+                    name: 'previousFrameName',
+                    element: previousFrameHTMLElement
+                },
+                next: {
+                    name: 'nextFrameName',
+                    element: nextFrameHTMLElement
+                },
+                context: object
+            }
+        </code></pre>
+        Context object is the one which was passed in 'display' command or, if none, the contents of URL
+        right after semicolon character in hash part of URL. If none provided, is undefined.
+        Event is triggered on HTML element to which this plugin is bound (frame container).
+    </td>
+</tr>
+<tr>
+    <th>after</th>
+    <td>
+        Triggered immediately after frame transition complete. Event structure is the same as for
+        `before` event described above.
+        Event is triggered on HTML element to which this plugin is bound (frame container).
+    </td>
+</tr>
+<tr>
+    <th>show</th>
+    <td>
+        Triggered when particular HTML element representing frame was shown. No special event
+        properties provided.
+    </td>
+</tr>
+<tr>
+    <th>hide</th>
+    <td>
+        Triggered when particular HTML element representing frame was hidden. No special event
+        properties provided.
+    </td>
 </tr>
 
 </table>
