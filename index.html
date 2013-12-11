@@ -35,8 +35,8 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.hashnav.js"></script>
 <script>
-    $('#hashnav').hashnav().on('slide', function (e) {
-        $('#current').text(e.prev + '->' + e.next);
+    $('#hashnav').hashnav().on('after', function (e) {
+        $('#current').text(e.prev.name + '->' + e.next.name);
     });
     $('button').click(function () { $('#hashnav').hashnav({ action: 'display', frame: 'zero' }); });
 </script>
