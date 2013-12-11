@@ -300,10 +300,10 @@
     $.fn[name] = function (options) {
         return this.each(function () {
             var key = 'plugin_' + name,
-                plugin = $.data(this, name);
+                plugin = $.data(this, key);
             if (plugin === undefined) {
                 plugin = new Hashnav(this, options);
-                $.data(this, name, plugin);
+                $.data(this, key, plugin);
             }
             plugin.command(options);
         });
