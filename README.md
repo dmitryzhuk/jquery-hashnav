@@ -86,7 +86,7 @@ Example javascript:
     <td>
         Displays specific frame programmatically.
         <pre><code>
-        $('#hashnav').hashnav({ action: 'display', frame: 'login', context: object });
+$('#hashnav').hashnav({ action: 'display', frame: 'login', context: object });
         </code></pre>
         will display DIV with data-frame="login" passing given context object into a corresponding event.
     </td>
@@ -96,9 +96,9 @@ Example javascript:
     <th>load</th>
     <td>
         Forces loading of the particular frame.
-        <pre><code>
-            $('#hashnav').hashnav({ action: 'load', frame: 'login' });
-        </code></pre>
+<pre><code>
+    $('#hashnav').hashnav({ action: 'load', frame: 'login' });
+</code></pre>
         will load contents of div with data-frame="login" using value of data-url attribute.
     </td>
 </tr>
@@ -117,9 +117,9 @@ Example javascript:
         'load' command. An event object contains two fields: name of the loaded frame and 
         actual HTMl element representing this frame { name: 'frameName', element: htmlElement }.
         <pre><code>
-            $('#hashnav').hashnav().on('load', function (e) {
-                console.log(e.name);
-            });
+$('#hashnav').hashnav().on('load', function (e) {
+    console.log(e.name);
+});
         </code></pre>
         will output name of the loaded frame to console.
         Event is triggered on HTML element to which this plugin is bound (frame container).
@@ -131,9 +131,9 @@ Example javascript:
         Triggered if frame loading failed for some reason. Event object has the same structure as
         for 'load' event.
         <pre><code>
-            $('#hashnav').hashnav().on('fail', function (e) {
-                console.log('Failed loading ' + e.name);
-            });
+$('#hashnav').hashnav().on('fail', function (e) {
+    console.log('Failed loading ' + e.name);
+});
         </code></pre>
         will output name of the frame which failed to be loaded.
         Event is triggered on HTML element to which this plugin is bound (frame container).
@@ -144,26 +144,26 @@ Example javascript:
     <td>
         Triggered before actual frame transition. Event structure is following:
         <pre><code>
-            {
-                prev: {
-                    name: 'previousFrameName',
-                    element: previousFrameHTMLElement
-                },
-                next: {
-                    name: 'nextFrameName',
-                    element: nextFrameHTMLElement
-                },
-                context: object
-            }
+{
+    prev: {
+        name: 'previousFrameName',
+        element: previousFrameHTMLElement
+    },
+    next: {
+        name: 'nextFrameName',
+        element: nextFrameHTMLElement
+    },
+    context: object
+}
         </code></pre>
         Context object is the one which was passed in 'display' command or, if none, the text
         following semicolon (;) character in hash part of URL. If none provided, is undefined.
         Event is triggered on HTML element to which this plugin is bound (frame container).
         Examle:
         <pre><code>
-            $('#hashnav').hashnav().on('before', function (e) {
-                console.log('Before transition from ' + e.prev.name ' to ' + e.next.name);
-            });
+$('#hashnav').hashnav().on('before', function (e) {
+    console.log('Before transition from ' + e.prev.name ' to ' + e.next.name);
+});
         </code></pre>
     </td>
 </tr>
@@ -175,9 +175,9 @@ Example javascript:
         Event is triggered on HTML element to which this plugin is bound (frame container).
         Examle:
         <pre><code>
-            $('#hashnav').hashnav().on('before', function (e) {
-                console.log('After transition from ' + e.prev.name ' to ' + e.next.name);
-            });
+$('#hashnav').hashnav().on('before', function (e) {
+    console.log('After transition from ' + e.prev.name ' to ' + e.next.name);
+});
         </code></pre>
     </td>
 </tr>
@@ -188,9 +188,9 @@ Example javascript:
         properties provided.
         Example:
         <pre><code>
-            $('#frame1').on('show', function () {
-                console.log('Frame ' + $(this).attr('data-frame') + ' is now visible');
-            });
+$('#frame1').on('show', function () {
+    console.log('Frame ' + $(this).attr('data-frame') + ' is now visible');
+});
         </code></pre>
     </td>
 </tr>
@@ -201,9 +201,9 @@ Example javascript:
         properties provided.
         Example:
         <pre><code>
-            $('#frame1').on('hide', function () {
-                console.log('Frame ' + $(this).attr('data-frame') + ' is now hidden');
-            });
+$('#frame1').on('hide', function () {
+    console.log('Frame ' + $(this).attr('data-frame') + ' is now hidden');
+});
         </code></pre>
     </td>
 </tr>
