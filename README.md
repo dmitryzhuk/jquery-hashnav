@@ -117,7 +117,9 @@ Example javascript:
         'load' command. An event object contains two fields: name of the loaded frame and 
         actual HTMl element representing this frame { name: 'frameName', element: htmlElement }.
         <pre><code>
-            $('#hashnav').hashnav().on('load', function (e) { console.log(e.name); });
+            $('#hashnav').hashnav().on('load', function (e) {
+                console.log(e.name);
+            });
         </code></pre>
         will output name of the loaded frame to console.
         Event is triggered on HTML element to which this plugin is bound (frame container).
@@ -129,7 +131,9 @@ Example javascript:
         Triggered if frame loading failed for some reason. Event object has the same structure as
         for 'load' event.
         <pre><code>
-            $('#hashnav').hashnav().on('fail', function (e) { console.log('Failed loading ' + e.name); });
+            $('#hashnav').hashnav().on('fail', function (e) {
+                console.log('Failed loading ' + e.name);
+            });
         </code></pre>
         will output name of the frame which failed to be loaded.
         Event is triggered on HTML element to which this plugin is bound (frame container).
@@ -155,6 +159,12 @@ Example javascript:
         Context object is the one which was passed in 'display' command or, if none, the text
         following semicolon (;) character in hash part of URL. If none provided, is undefined.
         Event is triggered on HTML element to which this plugin is bound (frame container).
+        Examle:
+        <pre><code>
+            $('#hashnav').hashnav().on('before', function (e) {
+                console.log('Before transition from ' + e.prev.name ' to ' + e.next.name);
+            });
+        </code></pre>
     </td>
 </tr>
 <tr>
@@ -163,6 +173,12 @@ Example javascript:
         Triggered immediately after frame transition complete. Event structure is the same as for
         `before` event described above.
         Event is triggered on HTML element to which this plugin is bound (frame container).
+        Examle:
+        <pre><code>
+            $('#hashnav').hashnav().on('before', function (e) {
+                console.log('After transition from ' + e.prev.name ' to ' + e.next.name);
+            });
+        </code></pre>
     </td>
 </tr>
 <tr>
@@ -170,6 +186,12 @@ Example javascript:
     <td>
         Triggered when particular HTML element representing frame was shown. No special event
         properties provided.
+        Example:
+        <pre><code>
+            $('#frame1').on('show', function () {
+                console.log('Frame ' + $(this).attr('data-frame') + ' is now visible');
+            });
+        </code></pre>
     </td>
 </tr>
 <tr>
@@ -177,6 +199,12 @@ Example javascript:
     <td>
         Triggered when particular HTML element representing frame was hidden. No special event
         properties provided.
+        Example:
+        <pre><code>
+            $('#frame1').on('hide', function () {
+                console.log('Frame ' + $(this).attr('data-frame') + ' is now hidden');
+            });
+        </code></pre>
     </td>
 </tr>
 
